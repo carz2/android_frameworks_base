@@ -1023,7 +1023,7 @@ public final class Settings {
         public static boolean hasInterestingConfigurationChanges(int changes) {
             return (changes&ActivityInfo.CONFIG_FONT_SCALE) != 0;
         }
-        
+
         public static boolean getShowGTalkServiceStatus(ContentResolver cr) {
             return getInt(cr, SHOW_GTALK_SERVICE_STATUS, 0) != 0;
         }
@@ -1230,7 +1230,7 @@ public final class Settings {
         public static final String LOCK_PATTERN_VISIBLE = "lock_pattern_visible_pattern";
 
         /**
-         * @deprecated Use 
+         * @deprecated Use
          * {@link android.provider.Settings.Secure#LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED}
          * instead
          */
@@ -1562,7 +1562,7 @@ public final class Settings {
          */
         public static final String ACCELEROMETER_ROTATION = "accelerometer_rotation";
 
-        /**
+         /**
          * Whether the audible DTMF tones are played by the dialer when dialing. The value is
          * boolean (1 or 0).
          */
@@ -2301,6 +2301,18 @@ public final class Settings {
          * Whether ADB is enabled.
          */
         public static final String ADB_ENABLED = "adb_enabled";
+
+        /**
+         * Whether to show ADB notifications.
+         * @hide
+         */
+        public static final String ADB_NOTIFY = "adb_notify";
+
+        /**
+         * The host name for this device.
+         * @hide
+         */
+        public static final String DEVICE_HOSTNAME = "device_hostname";
 
         /**
          * Setting to allow mock locations and location provider status to be injected into the
@@ -3465,6 +3477,21 @@ public final class Settings {
          */
         public static final String INET_CONDITION_DEBOUNCE_DOWN_DELAY =
                 "inet_condition_debounce_down_delay";
+
+        /**
+        /**
+         * Whether to allow move of any app to external storage
+         * @hide
+         */
+        public static final String ALLOW_MOVE_ALL_APPS_EXTERNAL =
+                "allow_move_all_apps_external";
+
+        /**
+         * Whether to allow killing of the foreground process by long-pressing
+         * the device's BACK button.
+         * @hide
+         */
+        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_on_longpress_back";
 
         /**
          * @hide

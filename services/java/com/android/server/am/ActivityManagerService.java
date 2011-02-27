@@ -3678,9 +3678,11 @@ public final class ActivityManagerService extends ActivityManagerNative
                 String[] pkgs = intent.getStringArrayExtra(Intent.EXTRA_PACKAGES);
                 if (pkgs != null) {
                     for (String pkg : pkgs) {
-                        if (forceStopPackageLocked(pkg, -1, false, false, false)) {
-                            setResultCode(Activity.RESULT_OK);
-                            return;
+                        synchronized (ActivityManagerService.this) {
+                         if (forceStopPackageLocked(pkg, -1, false, false, false)) {
+                             setResultCode(Activity.RESULT_OK);
+                             return;
+                         }
                         }
                     }
                 }
@@ -4382,12 +4384,15 @@ public final class ActivityManagerService extends ActivityManagerNative
         perm.modeFlags |= modeFlags;
         if (owner == null) {
             perm.globalModeFlags |= modeFlags;
-        } else if ((modeFlags&Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0) {
-            perm.readOwners.add(owner);
-            owner.addReadPermission(perm);
-        } else if ((modeFlags&Intent.FLAG_GRANT_WRITE_URI_PERMISSION) != 0) {
-            perm.writeOwners.add(owner);
-            owner.addWritePermission(perm);
+        } else {
+            if ((modeFlags&Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0) {
+                 perm.readOwners.add(owner);
+                 owner.addReadPermission(perm);
+            }
+            if ((modeFlags&Intent.FLAG_GRANT_WRITE_URI_PERMISSION) != 0) {
+                 perm.writeOwners.add(owner);
+                 owner.addWritePermission(perm);
+            }
         }
     }
 

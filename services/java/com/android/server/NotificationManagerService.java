@@ -340,7 +340,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             String action = intent.getAction();
 
             boolean queryRestart = false;
-            
+
             if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
                 boolean batteryCharging = (intent.getIntExtra("plugged", 0) != 0);
                 int level = intent.getIntExtra("level", -1);
@@ -391,15 +391,15 @@ public class NotificationManagerService extends INotificationManager.Stub
                 }
             } else if (action.equals(Intent.ACTION_SCREEN_ON)) {
                 mScreenOn = true;
-                updateNotificationPulse();
+                        updateNotificationPulse();
             } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
                 mScreenOn = false;
-                updateNotificationPulse();
+                        updateNotificationPulse();
             } else if (action.equals(TelephonyManager.ACTION_PHONE_STATE_CHANGED)) {
                 mInCall = (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK));
-                updateNotificationPulse();
+                    updateNotificationPulse();
+                }
             }
-        }
     };
 
     class SettingsObserver extends ContentObserver {
@@ -860,7 +860,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             } else {
                 if (old != null
                         && ((old.notification.flags & Notification.FLAG_SHOW_LIGHTS) != 0)) {
-                    updateLightsLocked();
+                        updateLightsLocked();
                 }
             }
         }
@@ -937,7 +937,7 @@ public class NotificationManagerService extends INotificationManager.Stub
      */
     private void cancelNotification(String pkg, String tag, int id, int mustHaveFlags,
             int mustNotHaveFlags) {
-        EventLog.writeEvent(EventLogTags.NOTIFICATION_CANCEL, pkg, id, mustHaveFlags);
+            EventLog.writeEvent(EventLogTags.NOTIFICATION_CANCEL, pkg, id, mustHaveFlags);
 
         synchronized (mNotificationList) {
             int index = indexOfNotificationLocked(pkg, tag, id);
@@ -1119,8 +1119,8 @@ public class NotificationManagerService extends INotificationManager.Stub
             }
             if (mNotificationPulseEnabled) {
                 // pulse repeatedly
-                mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_TIMED,
-                        ledOnMS, ledOffMS);
+                    mNotificationLight.setFlashing(ledARGB, LightsService.LIGHT_FLASH_TIMED,
+                            ledOnMS, ledOffMS);
             } else {
                 // pulse only once
                 mNotificationLight.pulse(ledARGB, ledOnMS);
@@ -1156,7 +1156,9 @@ public class NotificationManagerService extends INotificationManager.Stub
     // to accidentally lose.
     private void updateAdbNotification(boolean adbEnabled) {
         if (adbEnabled) {
-            if ("0".equals(SystemProperties.get("persist.adb.notify"))) {
+            if ("0".equals(SystemProperties.get("persist.adb.notify")) ||
+                            Settings.Secure.getInt(mContext.getContentResolver(),
+                            Settings.Secure.ADB_NOTIFY, 1) == 0) {
                 return;
             }
             if (!mAdbNotificationShown) {
