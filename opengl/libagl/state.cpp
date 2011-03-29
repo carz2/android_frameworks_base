@@ -101,12 +101,12 @@ ogles_context_t *ogles_init(size_t extra)
     // OpenGL enables dithering by default
     c->rasterizer.procs.enable(c, GL_DITHER);
 
+#ifdef LIBAGL_USE_GRALLOC_COPYBITS
     c->copybits.blitEngine = NULL;
     c->copybits.minScale = 0;
     c->copybits.maxScale = 0;
     c->copybits.drawSurfaceBuffer = 0;
 
-#ifdef LIBAGL_USE_GRALLOC_COPYBITS
     hw_module_t const* module;
     if (hw_get_module(COPYBIT_HARDWARE_MODULE_ID, &module) == 0) {
         struct copybit_device_t* copyBits;

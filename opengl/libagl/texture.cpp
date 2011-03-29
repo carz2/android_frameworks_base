@@ -30,6 +30,7 @@
 #include "copybit.h"
 #endif // LIBAGL_USE_GRALLOC_COPYBITS
 
+
 namespace android {
 
 // ----------------------------------------------------------------------------
@@ -766,6 +767,15 @@ static void drawTexxOES(GLfixed x, GLfixed y, GLfixed z, GLfixed w, GLfixed h,
     // quickly reject empty rects
     if ((w|h) <= 0)
         return;
+    
+#ifdef LIBAGL_USE_GRALLOC_COPYBITS
+    if (drawTexiOESWithCopybit(gglFixedToIntRound(x),
+            gglFixedToIntRound(y), gglFixedToIntRound(z),
+            gglFixedToIntRound(w), gglFixedToIntRound(h), c)) {
+        return;
+    }
+#endif
+
     drawTexxOESImp(x, y, z, w, h, c);
 }
 
@@ -777,6 +787,11 @@ static void drawTexiOES(GLint x, GLint y, GLint z, GLint w, GLint h, ogles_conte
     // which is a lot faster.
 
     if (ggl_likely(c->rasterizer.state.enabled_tmu == 1)) {
+#ifdef LIBAGL_USE_GRALLOC_COPYBITS
+        if (drawTexiOESWithCopybit(x, y, z, w, h, c)) {
+            return;
+        }
+#endif
         const int tmu = 0;
         texture_unit_t& u(c->textures.tmu[tmu]);
         EGLTextureObject* textureObject = u.texture;
@@ -784,9 +799,7 @@ static void drawTexiOES(GLint x, GLint y, GLint z, GLint w, GLint h, ogles_conte
         const GLint Hcr = textureObject->crop_rect[3];
 
         if ((w == Wcr) && (h == -Hcr)) {
-#ifndef LIBAGL_USE_GRALLOC_COPYBITS
             if ((w|h) <= 0) return; // quickly reject empty rects
-#endif
 
             if (u.dirty) {
                 c->rasterizer.procs.activeTexture(c, tmu);
