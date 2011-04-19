@@ -235,6 +235,7 @@ public class PackageParser {
                 pi.configPreferences = new ConfigurationInfo[N];
                 p.configPreferences.toArray(pi.configPreferences);
             }
+
             N = p.reqFeatures != null ? p.reqFeatures.size() : 0;
             if (N > 0) {
                 pi.reqFeatures = new FeatureInfo[N];
@@ -2665,14 +2666,8 @@ public class PackageParser {
 
         int priority = sa.getInt(
                 com.android.internal.R.styleable.AndroidManifestIntentFilter_priority, 0);
-        if (priority > 0 && isActivity && (flags&PARSE_IS_SYSTEM) == 0) {
-            Log.w(TAG, "Activity with priority > 0, forcing to 0 at "
-                    + mArchiveSourcePath + " "
-                    + parser.getPositionDescription());
-            priority = 0;
-        }
         outInfo.setPriority(priority);
-        
+
         TypedValue v = sa.peekValue(
                 com.android.internal.R.styleable.AndroidManifestIntentFilter_label);
         if (v != null && (outInfo.labelRes=v.resourceId) == 0) {
@@ -3119,7 +3114,11 @@ public class PackageParser {
         if (!sCompatibilityModeEnabled) {
             ai.disableCompatibilityMode();
         }
-        ai.enabled = p.mSetEnabled == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+        if (p.mSetEnabled == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+            ai.enabled = true;
+        } else if (p.mSetEnabled == PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
+            ai.enabled = false;
+        }
         return ai;
     }
 
