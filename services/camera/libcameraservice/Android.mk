@@ -30,6 +30,10 @@ endif
 
 LOCAL_SHARED_LIBRARIES:= libui
 
+ifeq ($(BOARD_CAMERA_USE_GETBUFFERINFO),true)
+LOCAL_CFLAGS += -DUSE_GETBUFFERINFO
+endif
+
 include $(BUILD_STATIC_LIBRARY)
 endif # USE_CAMERA_STUB
 
@@ -41,13 +45,6 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:=               \
     CameraService.cpp
-    
-ifeq ($(NO_GINGERBRED_CAMERA_SHIM),true)
-# Use the NoGingerbread camera shim
-# to interface with the froyo libcamera.so
-
-LOCAL_SRC_FILES += NoGingerbread.cpp
-endif
 
 LOCAL_SHARED_LIBRARIES:= \
     libui \
@@ -70,6 +67,28 @@ else
 LOCAL_SHARED_LIBRARIES += libcamera 
 endif
 
-$(warning $(LOCAL_SHARED_LIBRARIES))
+ifeq ($(BOARD_USE_FROYO_LIBCAMERA), true)
+LOCAL_CFLAGS += -DBOARD_USE_FROYO_LIBCAMERA
+    ifeq ($(BOARD_USE_REVERSE_FFC), true)
+    LOCAL_CFLAGS += -DBOARD_USE_REVERSE_FFC
+    endif
+endif
+
+ifeq ($(BOARD_CAMERA_USE_GETBUFFERINFO),true)
+LOCAL_CFLAGS += -DUSE_GETBUFFERINFO
+endif
+
+ifeq ($(BOARD_OVERLAY_FORMAT_YCbCr_420_SP),true)
+LOCAL_CFLAGS += -DUSE_OVERLAY_FORMAT_YCbCr_420_SP
+LOCAL_C_INCLUDES += hardware/msm7k/libgralloc-qsd8k
+endif
+
+ifeq ($(BOARD_USE_CAF_LIBCAMERA), true)
+    LOCAL_CFLAGS += -DBOARD_USE_CAF_LIBCAMERA
+endif
+
+ifeq ($(BOARD_FIRST_CAMERA_FRONT_FACING),true)
+    LOCAL_CFLAGS += -DFIRST_CAMERA_FACING=CAMERA_FACING_FRONT -DFIRST_CAMERA_ORIENTATION=0
+endif
 
 include $(BUILD_SHARED_LIBRARY)

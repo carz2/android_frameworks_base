@@ -448,7 +448,7 @@ framework_docs_SDK_VERSION:=2.3
   # release version (ie "Release x")  (full releases only)
 framework_docs_SDK_REL_ID:=1
   # flag to build offline docs for a preview release
-framework_docs_SDK_PREVIEW:=true
+framework_docs_SDK_PREVIEW:=0
 
 framework_docs_LOCAL_DROIDDOC_OPTIONS += \
 		-hdf sdk.version $(framework_docs_SDK_VERSION) \
