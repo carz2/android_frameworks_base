@@ -18,6 +18,7 @@
 package com.android.server;
 
 import com.android.server.am.ActivityManagerService;
+import com.android.server.usb.UsbService;
 import com.android.internal.app.ShutdownThread;
 import com.android.internal.os.BinderInternal;
 import com.android.internal.os.SamplingProfilerIntegration;
@@ -77,8 +78,7 @@ class ServerThread extends Thread {
            SystemProperties.set("persist.service.adb.enable", enableAdb ? "1" : "0");
         }
     }
-<<<<<<< HEAD
-=======
+
  /*   private class ZRamSettingsObserver extends ContentObserver {
         public ZRamSettingsObserver() {
             super(null);
@@ -91,7 +91,6 @@ class ServerThread extends Thread {
             SystemProperties.set("persist.zram.size",Integer.toString(size));
         }
     }*/
->>>>>>> f8034b1... remove zram reference
 
     @Override
     public void run() {
@@ -139,7 +138,7 @@ class ServerThread extends Thread {
         BluetoothA2dpService bluetoothA2dp = null;
         HeadsetObserver headset = null;
         DockObserver dock = null;
-        UsbObserver usb = null;
+        UsbService usb = null;
         UiModeManagerService uiMode = null;
         RecognitionManagerService recognition = null;
         ThrottleService throttle = null;
@@ -414,11 +413,12 @@ class ServerThread extends Thread {
             }
 
             try {
-                Slog.i(TAG, "USB Observer");
+                Slog.i(TAG, "USB Service");
                 // Listen for USB changes
-                usb = new UsbObserver(context);
+                usb = new UsbService(context);
+                ServiceManager.addService(Context.USB_SERVICE, usb);
             } catch (Throwable e) {
-                Slog.e(TAG, "Failure starting UsbObserver", e);
+                Slog.e(TAG, "Failure starting UsbService", e);
             }
 
             try {
@@ -470,10 +470,13 @@ class ServerThread extends Thread {
         // make sure the ADB_ENABLED setting value matches the secure property value
         Settings.Secure.putInt(mContentResolver, Settings.Secure.ADB_ENABLED,
                 "1".equals(SystemProperties.get("persist.service.adb.enable")) ? 1 : 0);
-
+        Settings.Secure.putInt(mContentResolver, Settings.Secure.ZRAM_SIZE,
+                SystemProperties.getInt("persist.zram.size",0));
         // register observer to listen for settings changes
         mContentResolver.registerContentObserver(Settings.Secure.getUriFor(Settings.Secure.ADB_ENABLED),
                 false, new AdbSettingsObserver());
+        mContentResolver.registerContentObserver(Settings.Secure.getUriFor(Settings.Secure.ZRAM_SIZE),
+                false, new ZRamSettingsObserver());
 
         // Before things start rolling, be sure we have decided whether
         // we are in safe mode.
@@ -526,7 +529,7 @@ class ServerThread extends Thread {
         final BatteryService batteryF = battery;
         final ConnectivityService connectivityF = connectivity;
         final DockObserver dockF = dock;
-        final UsbObserver usbF = usb;
+        final UsbService usbF = usb;
         final ThrottleService throttleF = throttle;
         final UiModeManagerService uiModeF = uiMode;
         final AppWidgetService appWidgetF = appWidget;
