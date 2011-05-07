@@ -3527,7 +3527,6 @@ public final class Settings {
          */
         public static final String[] SETTINGS_TO_BACKUP = {
             ADB_ENABLED,
-            ZRAM_SIZE,
             ALLOW_MOCK_LOCATION,
             PARENTAL_CONTROL_ENABLED,
             PARENTAL_CONTROL_REDIRECT_URL,
