@@ -77,6 +77,21 @@ class ServerThread extends Thread {
            SystemProperties.set("persist.service.adb.enable", enableAdb ? "1" : "0");
         }
     }
+<<<<<<< HEAD
+=======
+ /*   private class ZRamSettingsObserver extends ContentObserver {
+        public ZRamSettingsObserver() {
+            super(null);
+        }
+        @Override
+        public void onChange(boolean selfChange) {
+            int size = Settings.Secure.getInt(mContentResolver,
+                                Settings.Secure.ZRAM_SIZE,0);
+            Log.i("zram","Update zram size: " + Integer.toString(size));
+            SystemProperties.set("persist.zram.size",Integer.toString(size));
+        }
+    }*/
+>>>>>>> f8034b1... remove zram reference
 
     @Override
     public void run() {
