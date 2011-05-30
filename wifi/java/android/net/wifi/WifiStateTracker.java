@@ -969,7 +969,9 @@ public class WifiStateTracker extends NetworkStateTracker {
                     resetConnections(true);
                 }
                 // When supplicant dies, kill the DHCP thread
-                mDhcpTarget.getLooper().quit();
+                if (mDhcpTarget != null) {
+                    mDhcpTarget.getLooper().quit();
+                }
 
                 mContext.removeStickyBroadcast(new Intent(WifiManager.NETWORK_STATE_CHANGED_ACTION));
                 if (ActivityManagerNative.isSystemReady()) {
@@ -1441,8 +1443,10 @@ public class WifiStateTracker extends NetworkStateTracker {
         NetworkUtils.resetConnections(mInterfaceName);
 
         // Stop DHCP
-        mDhcpTarget.setCancelCallback(true);
-        mDhcpTarget.removeMessages(EVENT_DHCP_START);
+        if (mDhcpTarget != null) {
+            mDhcpTarget.setCancelCallback(true);
+            mDhcpTarget.removeMessages(EVENT_DHCP_START);
+        }
 
         if (!NetworkUtils.stopDhcp(mInterfaceName)) {
             Log.e(TAG, "Could not stop DHCP");
@@ -2527,10 +2531,13 @@ public class WifiStateTracker extends NetworkStateTracker {
                             //Do it a bit earlier than half the lease duration time
                             //to beat the native DHCP client and avoid extra packets
                             //48% for one hour lease time = 29 minutes
-                            mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                                    SystemClock.elapsedRealtime() +
-                                    mDhcpInfo.leaseDuration * 480, //in milliseconds
-                                    mDhcpRenewalIntent);
+                            //Don't do it if we're on an infinite lease
+                            if (mDhcpInfo.leaseDuration >= 0) {
+                                mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                                        SystemClock.elapsedRealtime() +
+                                        mDhcpInfo.leaseDuration * 480, //in milliseconds
+                                        mDhcpRenewalIntent);
+                            }
                         } else {
                             event = EVENT_INTERFACE_CONFIGURATION_FAILED;
                             Log.e(TAG, "DHCP request failed: " + NetworkUtils.getDhcpError());
