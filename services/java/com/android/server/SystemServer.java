@@ -470,13 +470,13 @@ class ServerThread extends Thread {
         // make sure the ADB_ENABLED setting value matches the secure property value
         Settings.Secure.putInt(mContentResolver, Settings.Secure.ADB_ENABLED,
                 "1".equals(SystemProperties.get("persist.service.adb.enable")) ? 1 : 0);
-        Settings.Secure.putInt(mContentResolver, Settings.Secure.ZRAM_SIZE,
-                SystemProperties.getInt("persist.zram.size",0));
+        //Settings.Secure.putInt(mContentResolver, Settings.Secure.ZRAM_SIZE,
+               // SystemProperties.getInt("persist.zram.size",0));
         // register observer to listen for settings changes
         mContentResolver.registerContentObserver(Settings.Secure.getUriFor(Settings.Secure.ADB_ENABLED),
                 false, new AdbSettingsObserver());
-        mContentResolver.registerContentObserver(Settings.Secure.getUriFor(Settings.Secure.ZRAM_SIZE),
-                false, new ZRamSettingsObserver());
+        //mContentResolver.registerContentObserver(Settings.Secure.getUriFor(Settings.Secure.ZRAM_SIZE),
+                //false, new ZRamSettingsObserver());
 
         // Before things start rolling, be sure we have decided whether
         // we are in safe mode.
