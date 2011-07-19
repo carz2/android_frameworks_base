@@ -1833,7 +1833,7 @@ public class Resources {
                     //Log.i(TAG, "Returning cached drawable @ #" +
                     //        Integer.toHexString(((Integer)key).intValue())
                     //        + " in " + this + ": " + entry);
-                    return entry.newDrawable();
+                    return entry.newDrawable(this);
                 }
                 else {  // our entry has been purged
                     drawableCache.delete(key);
