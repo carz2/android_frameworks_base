@@ -37,7 +37,7 @@
 #endif
 #undef NELEM
 #define NELEM(x)                    (sizeof(x)/sizeof(*(x)))
-#define MAX_NUMBER_OF_GL_EXTENSIONS 64
+#define MAX_NUMBER_OF_GL_EXTENSIONS 32
 
 
 #if defined(HAVE_ANDROID_OS) && !USE_SLOW_BINDING && __OPTIMIZE__
@@ -86,7 +86,7 @@ struct gl_hooks_t {
         #include "entries.in"
     } gl;
     struct gl_ext_t {
-        __eglMustCastToProperFunctionPointerType extensions[MAX_NUMBER_OF_GL_EXTENSIONS];
+        void (*extensions[MAX_NUMBER_OF_GL_EXTENSIONS])(void);
     } ext;
 };
 #undef GL_ENTRY
