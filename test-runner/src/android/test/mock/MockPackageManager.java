@@ -497,4 +497,9 @@ public class MockPackageManager extends PackageManager {
     public List<PackageInfo> getInstalledThemePackages() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void setPackageObbPath(String packageName, String path) {
+        throw new UnsupportedOperationException();
+    }
 }
