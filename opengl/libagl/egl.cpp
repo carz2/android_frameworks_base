@@ -231,7 +231,7 @@ struct egl_window_surface_v2_t : public egl_surface_t
     virtual     EGLint      getSwapBehavior() const;
     virtual     EGLBoolean  setSwapRectangle(EGLint l, EGLint t, EGLint w, EGLint h);
     virtual     EGLClientBuffer  getRenderBuffer() const;
-    
+
 private:
     status_t lock(android_native_buffer_t* buf, int usage, void** vaddr);
     status_t unlock(android_native_buffer_t* buf);
@@ -952,8 +952,8 @@ static const extention_map_t gExtentionMap[] = {
             (__eglMustCastToProperFunctionPointerType)&eglDestroyImageKHR }, 
     { "eglSetSwapRectangleANDROID", 
             (__eglMustCastToProperFunctionPointerType)&eglSetSwapRectangleANDROID }, 
-    { "eglGetRenderBufferANDROID", 
-            (__eglMustCastToProperFunctionPointerType)&eglGetRenderBufferANDROID }, 
+    { "eglGetRenderBufferANDROID",
+            (__eglMustCastToProperFunctionPointerType)&eglGetRenderBufferANDROID },
 };
 
 /*
@@ -2186,6 +2186,8 @@ EGLClientBuffer eglGetRenderBufferANDROID(EGLDisplay dpy, EGLSurface draw)
         return setError(EGL_BAD_DISPLAY, (EGLClientBuffer)0);
 
     egl_surface_t* d = static_cast<egl_surface_t*>(draw);
+    if (!d->isValid())
+        return setError(EGL_BAD_SURFACE, (EGLClientBuffer)0);
     if (d->dpy != dpy)
         return setError(EGL_BAD_DISPLAY, (EGLClientBuffer)0);
 

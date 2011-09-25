@@ -764,18 +764,17 @@ static void drawTexxOESImp(GLfixed x, GLfixed y, GLfixed z, GLfixed w, GLfixed h
 static void drawTexxOES(GLfixed x, GLfixed y, GLfixed z, GLfixed w, GLfixed h,
         ogles_context_t* c)
 {
-    // quickly reject empty rects
-    if ((w|h) <= 0)
-        return;
-    
 #ifdef LIBAGL_USE_GRALLOC_COPYBITS
     if (drawTexiOESWithCopybit(gglFixedToIntRound(x),
             gglFixedToIntRound(y), gglFixedToIntRound(z),
             gglFixedToIntRound(w), gglFixedToIntRound(h), c)) {
         return;
     }
+#else
+    // quickly reject empty rects
+    if ((w|h) <= 0)
+        return;
 #endif
-
     drawTexxOESImp(x, y, z, w, h, c);
 }
 

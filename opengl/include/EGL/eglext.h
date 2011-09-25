@@ -229,12 +229,6 @@ struct android_native_buffer_t;
 #define EGL_NATIVE_BUFFER_ANDROID       0x3140  /* eglCreateImageKHR target */
 #endif
 
-#ifndef EGL_ANDROID_image_native_buffer
-#define EGL_ANDROID_image_native_buffer 1
-struct android_native_buffer_t;
-#define EGL_NATIVE_BUFFER_ANDROID       0x3140  /* eglCreateImageKHR target */
-#endif
-
 #ifndef EGL_ANDROID_get_render_buffer
 #define EGL_ANDROID_get_render_buffer 1
 #ifdef EGL_EGLEXT_PROTOTYPES

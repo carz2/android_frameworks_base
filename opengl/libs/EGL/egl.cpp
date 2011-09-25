@@ -425,8 +425,8 @@ static const extention_map_t gExtentionMap[] = {
             (__eglMustCastToProperFunctionPointerType)NULL },
     { "glEGLImageTargetRenderbufferStorageOES",
             (__eglMustCastToProperFunctionPointerType)NULL },
-    { "eglGetRenderBufferANDROID", 
-            (__eglMustCastToProperFunctionPointerType)&eglGetRenderBufferANDROID }, 
+    { "eglGetRenderBufferANDROID",
+            (__eglMustCastToProperFunctionPointerType)&eglGetRenderBufferANDROID },
 };
 
 static extention_map_t gGLExtentionMap[MAX_NUMBER_OF_GL_EXTENSIONS];
@@ -1890,13 +1890,16 @@ EGLBoolean eglSetSwapRectangleANDROID(EGLDisplay dpy, EGLSurface draw,
 
 EGLClientBuffer eglGetRenderBufferANDROID(EGLDisplay dpy, EGLSurface draw)
 {
+    SurfaceRef _s(draw);
+    if (!_s.get()) return setError(EGL_BAD_SURFACE, (EGLClientBuffer*)0);
+
     if (!validate_display_surface(dpy, draw))
-        return 0;    
+        return 0;
     egl_display_t const * const dp = get_display(dpy);
     egl_surface_t const * const s = get_surface(draw);
     if (s->cnx->egl.eglGetRenderBufferANDROID) {
-        return s->cnx->egl.eglGetRenderBufferANDROID(dp->disp[s->impl].dpy,
-                s->surface);
+        return s->cnx->egl.eglGetRenderBufferANDROID(
+                dp->disp[s->impl].dpy, s->surface);
     }
-    return 0;
+    return setError(EGL_BAD_DISPLAY, (EGLClientBuffer*)0);
 }
