@@ -126,9 +126,8 @@ public class StorageNotification extends StorageEventListener {
     }
 
     private void onStorageStateChangedAsync(String path, String oldState, String newState) {
-        boolean isPrimary = Environment.getExternalStorageDirectory().getPath().equals(path);
         Slog.i(TAG, String.format(
-                "Media {%s} state changed from {%s} -> {%s} (primary = %b)", path, oldState, newState, isPrimary));
+                "Media {%s} state changed from {%s} -> {%s}", path, oldState, newState));
         if (newState.equals(Environment.MEDIA_SHARED)) {
             /*
              * Storage is now shared. Modify the UMS notification
@@ -234,8 +233,8 @@ public class StorageNotification extends StorageEventListener {
                     com.android.internal.R.string.ext_media_nomedia_notification_title,
                     com.android.internal.R.string.ext_media_nomedia_notification_message,
                     com.android.internal.R.drawable.stat_notify_sdcard_usb,
-                    true, !isPrimary, null);
-            updateUsbMassStorageNotification(isPrimary ? false : mUmsAvailable);
+                    true, false, null);
+            updateUsbMassStorageNotification(false);
         } else if (newState.equals(Environment.MEDIA_BAD_REMOVAL)) {
             /*
              * Storage has been removed unsafely. Show bad removal media notification,
@@ -246,7 +245,7 @@ public class StorageNotification extends StorageEventListener {
                     com.android.internal.R.string.ext_media_badremoval_notification_message,
                     com.android.internal.R.drawable.stat_sys_warning,
                     true, true, null);
-            updateUsbMassStorageNotification(isPrimary ? false : mUmsAvailable);
+            updateUsbMassStorageNotification(false);
         } else {
             Slog.w(TAG, String.format("Ignoring unknown state {%s}", newState));
         }
