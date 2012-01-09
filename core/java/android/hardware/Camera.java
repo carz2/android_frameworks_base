@@ -3454,5 +3454,11 @@ public class Camera {
 
             return result;
         }
+
+        private boolean same(String s1, String s2) {
+            if (s1 == null && s2 == null) return true;
+            if (s1 != null && s1.equals(s2)) return true;
+            return false;
+        }
     };
 }
