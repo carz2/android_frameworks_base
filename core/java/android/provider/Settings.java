@@ -1813,6 +1813,13 @@ public final class Settings {
             "notifications_use_ring_volume";
 
         /**
+         * Boolean value whether to link ringtone and notification volumes
+         *
+         * @hide
+         */
+        public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
+
+        /**
          * Whether silent mode should allow vibration feedback. This is used
          * internally in AudioService and the Sound settings activity to
          * coordinate decoupling of vibrate and silent modes. This setting

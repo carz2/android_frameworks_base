@@ -705,6 +705,15 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             } else {
                 mRingerModeAffectedStreams |= (1 << AudioSystem.STREAM_MUSIC);
             }
+
+            boolean linkNotificationWithVolume = Settings.System.getInt(mContentResolver,
+                    Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
+            if (linkNotificationWithVolume) {
+                STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
+            } else {
+                STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
+            }
+
             synchronized (mCameraSoundForced) {
                 if (mCameraSoundForced) {
                     mRingerModeAffectedStreams &= ~(1 << AudioSystem.STREAM_SYSTEM_ENFORCED);
@@ -3436,6 +3445,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 Settings.System.MODE_RINGER_STREAMS_AFFECTED), false, this);
             mContentResolver.registerContentObserver(Settings.Global.getUriFor(
                 Settings.Global.DOCK_AUDIO_MEDIA_ENABLED), false, this);
+            mContentResolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.VOLUME_LINK_NOTIFICATION), false, this);
         }
 
         @Override
@@ -3472,6 +3483,14 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     setRingerModeInt(getRingerMode(), false);
                 }
                 readDockAudioSettings(mContentResolver);
+
+                boolean linkNotificationWithVolume = Settings.System.getInt(mContentResolver,
+                        Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
+                if (linkNotificationWithVolume) {
+                    STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
+                } else {
+                    STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
+                }
             }
         }
     }
