@@ -478,7 +478,7 @@ void SurfaceFlinger::handleConsoleEvents()
         hw.acquireScreen();
         // this is a temporary work-around, eventually this should be called
         // by the power-manager
-        SurfaceFlinger::turnElectronBeamOn(mElectronBeamAnimationMode);
+        //SurfaceFlinger::turnElectronBeamOn(mElectronBeamAnimationMode);
     }
 
     if (what & eConsoleReleased) {
@@ -2086,7 +2086,7 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
     };
 
     // the full animation is 12 frames
-    int nbFrames = 8;
+    int nbFrames = 12;
     s_curve_interpolator itr(nbFrames, 7.5f);
     s_curve_interpolator itg(nbFrames, 8.0f);
     s_curve_interpolator itb(nbFrames, 8.5f);
@@ -2104,7 +2104,7 @@ status_t SurfaceFlinger::electronBeamOnAnimationImplLocked()
         hw.flip(screenBounds);
     }
 
-    nbFrames = 4;
+    nbFrames = 6;
     v_stretch vverts(hw_w, hw_h);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
