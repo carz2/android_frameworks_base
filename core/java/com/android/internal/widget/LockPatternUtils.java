@@ -20,6 +20,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.FileObserver;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -100,8 +101,9 @@ public class LockPatternUtils {
     private final static String LOCKOUT_PERMANENT_KEY = "lockscreen.lockedoutpermanently";
     private final static String LOCKOUT_ATTEMPT_DEADLINE = "lockscreen.lockoutattemptdeadline";
     private final static String PATTERN_EVER_CHOSEN_KEY = "lockscreen.patterneverchosen";
-    public final static String PASSWORD_TYPE_KEY = "lockscreen.password_type";
     private final static String LOCK_PASSWORD_SALT_KEY = "lockscreen.password_salt";
+    private final static String LOCK_FINGER_ENABLED = "lockscreen.lockfingerenabled";
+    public final static String PASSWORD_TYPE_KEY = "lockscreen.password_type";
 
     private final Context mContext;
     private final ContentResolver mContentResolver;
@@ -250,6 +252,14 @@ public class LockPatternUtils {
     }
 
     /**
+     * Check to see if the user has stored a finger.
+     * @return Whether a saved finger exists.
+     */
+    public boolean savedFingerExists() {
+        return true;
+    }
+
+    /**
      * Return true if the user has ever chosen a pattern.  This is true even if the pattern is
      * currently cleared.
      *
@@ -284,6 +294,11 @@ public class LockPatternUtils {
             case DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC:
                 if (isLockPasswordEnabled()) {
                     activePasswordQuality = DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC;
+                }
+                break;
+            case DevicePolicyManager.PASSWORD_QUALITY_FINGER:
+                if (isLockFingerEnabled()) {
+                    activePasswordQuality = DevicePolicyManager.PASSWORD_QUALITY_FINGER;
                 }
                 break;
         }
@@ -559,10 +574,31 @@ public class LockPatternUtils {
     }
 
     /**
+     * @return Whether the lock finger is enabled.
+     */
+    public boolean isLockFingerEnabled() {
+        return getBoolean(LOCK_FINGER_ENABLED)
+                && getLong(PASSWORD_TYPE_KEY, 0)
+                        == DevicePolicyManager.PASSWORD_QUALITY_FINGER;
+    }
+
+    /**
      * Set whether the lock pattern is enabled.
      */
     public void setLockPatternEnabled(boolean enabled) {
         setBoolean(Settings.Secure.LOCK_PATTERN_ENABLED, enabled);
+    }
+
+    /**
+     * Set whether the lock finger is enabled.
+     */
+    public void setLockFingerEnabled(boolean enabled) {
+        setBoolean(LOCK_FINGER_ENABLED, enabled);
+        if (enabled) {
+            setLong(PASSWORD_TYPE_KEY, DevicePolicyManager.PASSWORD_QUALITY_FINGER);
+        } else {
+            setLong(PASSWORD_TYPE_KEY, DevicePolicyManager.PASSWORD_QUALITY_SOMETHING);
+        }
     }
 
     /**
@@ -592,59 +628,59 @@ public class LockPatternUtils {
     public void setTactileFeedbackEnabled(boolean enabled) {
         setBoolean(Settings.Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED, enabled);
     }
-    
+
     public void setVisibleDotsEnabled(boolean enabled) {
-        setBoolean(Settings.Secure.LOCK_DOTS_VISIBLE, enabled);        
+        setBoolean(Settings.Secure.LOCK_DOTS_VISIBLE, enabled);
     }
-    
+
     public boolean isVisibleDotsEnabled() {
         return getBoolean(Settings.Secure.LOCK_DOTS_VISIBLE, true);
     }
-    
+
     public void setShowErrorPath(boolean enabled) {
-        setBoolean(Settings.Secure.LOCK_SHOW_ERROR_PATH, enabled);        
+        setBoolean(Settings.Secure.LOCK_SHOW_ERROR_PATH, enabled);
     }
-    
+
     public boolean isShowErrorPath() {
         return getBoolean(Settings.Secure.LOCK_SHOW_ERROR_PATH, true);
     }
-    
+
     public void setShowCustomMsg(boolean enabled) {
         setBoolean(Settings.Secure.LOCK_SHOW_CUSTOM_MSG, enabled);
     }
-    
+
     public boolean isShowCustomMsg() {
         return getBoolean(Settings.Secure.LOCK_SHOW_CUSTOM_MSG, false);
     }
-    
+
     public void setCustomMsg(String msg) {
         setString(Settings.Secure.LOCK_CUSTOM_MSG, msg);
     }
-    
+
     public String getCustomMsg() {
         return getString(Settings.Secure.LOCK_CUSTOM_MSG);
     }
-    
+
     public int getIncorrectDelay() {
         return getInt(Settings.Secure.LOCK_INCORRECT_DELAY, 2000);
     }
-    
+
     public void setIncorrectDelay(int delay) {
         setInt(Settings.Secure.LOCK_INCORRECT_DELAY, delay);
     }
-    
+
     public void setShowUnlockMsg(boolean enabled) {
         setBoolean(Settings.Secure.SHOW_UNLOCK_TEXT, enabled);
     }
-    
+
     public boolean isShowUnlockMsg() {
         return getBoolean(Settings.Secure.SHOW_UNLOCK_TEXT, true);
     }
-    
+
     public void setShowUnlockErrMsg(boolean enabled) {
         setBoolean(Settings.Secure.SHOW_UNLOCK_ERR_TEXT, enabled);
     }
-    
+
     public boolean isShowUnlockErrMsg() {
         return getBoolean(Settings.Secure.SHOW_UNLOCK_ERR_TEXT, true);
     }
@@ -735,83 +771,53 @@ public class LockPatternUtils {
             }
             where.append(") ");
         }
+
+        String[] projection = new String[] {
+            Calendar.EventsColumns.TITLE,
+            Calendar.Instances.BEGIN,
+            Calendar.EventsColumns.DESCRIPTION,
+            Calendar.EventsColumns.EVENT_LOCATION,
+            Calendar.EventsColumns.ALL_DAY
+        };
+
+        Uri uri = Uri.withAppendedPath(Calendar.Instances.CONTENT_URI,
+                String.format("%d/%d", now, later));
         String nextCalendarAlarm = null;
         Cursor cursor = null;
+
         try {
-            cursor = Calendar.Instances.query(mContentResolver,
-                    new String[] {
-                        Calendar.EventsColumns.TITLE,
-                        Calendar.EventsColumns.DTSTART,
-                        Calendar.EventsColumns.DTEND,
-                        Calendar.EventsColumns.DESCRIPTION,
-                        Calendar.EventsColumns.EVENT_LOCATION,
-                        Calendar.EventsColumns.ALL_DAY,
-                    },
-                    now,
-                    later,
-                    where.toString(),
-                    Calendar.EventsColumns.DTSTART + " ASC");
+            cursor = mContentResolver.query(uri,
+                    projection, where.toString(), null,
+                    Calendar.Instances.DEFAULT_SORT_ORDER);
 
             if (cursor != null && cursor.moveToFirst()) {
 
-                // All day events are given in UTC. This can cause them to be sorted
-                // as earlier events compared to a normal event on the night before
-                // we can fix this by doing UTC time - offset => local time and then
-                // compare that to the next event on the cursor.
-                long offset = (new Date()).getTimezoneOffset() * 60000;
-                String title, description, location;
-                Date start;
-                boolean allDay, isRepeat;
-                int i = cursor.getCount() - 1;
+                String title = cursor.getString(0);
+                long begin = cursor.getLong(1);
+                String description = cursor.getString(2);
+                String location = cursor.getString(3);
+                boolean allDay = cursor.getInt(4) != 0;
 
-                do {
-                    title       = cursor.getString(0);
-                    start       = new Date(cursor.getLong(1));
-                    isRepeat    = cursor.getLong(2) == 0;
-                    description = cursor.getString(3);
-                    location    = cursor.getString(4);
-                    allDay      = cursor.getInt(5) != 0;
-
-                    // repeat events always report the first day of the event as
-                    // start >.<' Fix the date then, to match today
-                    if (isRepeat) {
-                        java.util.Calendar today = java.util.Calendar.getInstance();
-                        java.util.Calendar startc = java.util.Calendar.getInstance();
-                        startc.setTime(start);
-
-                        // Event is repetitive in the future
-                        if (today.getTimeInMillis() < startc.getTimeInMillis()) {
-                            Log.i(TAG, "Repetitive event detected in the future");
-                        } else {
-                            startc.set(java.util.Calendar.DATE, today.get(java.util.Calendar.DATE));
-                            startc.set(java.util.Calendar.MONTH, today.get(java.util.Calendar.MONTH));
-                            startc.set(java.util.Calendar.YEAR, today.get(java.util.Calendar.YEAR));
-
-                            // Event already old, probably tomorrow is desired
-                            if (today.getTimeInMillis() > startc.getTimeInMillis()) {
-                                startc.roll(java.util.Calendar.DATE, true);
-                                Log.i(TAG, "Repetitive event hour already old, using tomorrow");
-                            }
-
-                            Log.i(TAG, "Repetitive event detected, date corrected (" +
-                                    start.getTime() + " -> " + startc.getTimeInMillis() + ")");
-                            start = startc.getTime();
-                        }
-                    }
-
-                    // i prevents out of range comparisons
-                    // if it's not an all day event, we're sure it's the earliest event
-                    if (i == 0 || !allDay)
-                        break;
-
+                // Check the next event in the case of allday event. As UTC is used for allday
+                // events, the next event may be the one that actually starts sooner
+                if (allDay && !cursor.isLast()) {
                     cursor.moveToNext();
-                    i = i-1;
-                } while ((new Date(cursor.getLong(1) - offset)).before(start));
+                    long nextBegin = cursor.getLong(1);
+                    if (nextBegin < begin + TimeZone.getDefault().getOffset(begin)) {
+                        title = cursor.getString(0);
+                        begin = nextBegin;
+                        description = cursor.getString(2);
+                        location = cursor.getString(3);
+                        allDay = cursor.getInt(4) != 0;
+                    }
+                }
 
+                Date start = new Date(begin);
                 StringBuilder sb = new StringBuilder();
 
-                if (allDay == true) {
-                    SimpleDateFormat sdf = new SimpleDateFormat(mContext.getString(R.string.abbrev_wday_month_day_no_year));
+                if (allDay) {
+                    SimpleDateFormat sdf = new SimpleDateFormat(
+                            mContext.getString(R.string.abbrev_wday_month_day_no_year));
                     // Calendar stores all-day events in UTC -- setting the timezone ensures
                     // the correct date is shown.
                     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -881,7 +887,7 @@ public class LockPatternUtils {
         return 1 ==
                 android.provider.Settings.Secure.getInt(mContentResolver, secureSettingKey, 0);
     }
-    
+
     private boolean getBoolean(String systemSettingKey, boolean defaultValue) {
         return 1 ==
                 android.provider.Settings.Secure.getInt(
@@ -901,7 +907,7 @@ public class LockPatternUtils {
     private void setLong(String secureSettingKey, long value) {
         android.provider.Settings.Secure.putLong(mContentResolver, secureSettingKey, value);
     }
-    
+
     private int getInt(String systemSettingKey, int def) {
         return android.provider.Settings.Secure.getInt(mContentResolver, systemSettingKey, def);
     }
@@ -909,16 +915,16 @@ public class LockPatternUtils {
     private void setInt(String systemSettingKey, int value) {
         android.provider.Settings.Secure.putInt(mContentResolver, systemSettingKey, value);
     }
-    
+
     private String getString(String systemSettingKey) {
         String s = android.provider.Settings.Secure.getString(mContentResolver, systemSettingKey);
-        
+
         if (s == null)
             return "";
-    
+
         return s;
     }
-    
+
     private void setString(String systemSettingKey, String value) {
         android.provider.Settings.Secure.putString(mContentResolver, systemSettingKey, value);
     }
@@ -926,10 +932,12 @@ public class LockPatternUtils {
     public boolean isSecure() {
         long mode = getKeyguardStoredPasswordQuality();
         final boolean isPattern = mode == DevicePolicyManager.PASSWORD_QUALITY_SOMETHING;
+        final boolean isFinger = mode == DevicePolicyManager.PASSWORD_QUALITY_FINGER;
         final boolean isPassword = mode == DevicePolicyManager.PASSWORD_QUALITY_NUMERIC
                 || mode == DevicePolicyManager.PASSWORD_QUALITY_ALPHABETIC
                 || mode == DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC;
         final boolean secure = isPattern && isLockPatternEnabled() && savedPatternExists()
+                || isFinger && isLockFingerEnabled() && savedFingerExists()
                 || isPassword && savedPasswordExists();
         return secure;
     }

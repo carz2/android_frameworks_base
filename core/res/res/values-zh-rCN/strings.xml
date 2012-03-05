@@ -842,6 +842,8 @@
     <string name="extmedia_format_button_format" msgid="4131064560127478695">"格式化"</string>
     <string name="adb_active_notification_title" msgid="6729044778949189918">"已连接 USB 调试"</string>
     <string name="adb_active_notification_message" msgid="8470296818270110396">"选择停用 USB 调试。"</string>
+    <string name="adb_net_enabled_notification_title">已开启网络调试</string>
+    <string name="adb_net_enabled_notification_message">选择停用网络调试.</string>
     <string name="select_input_method" msgid="6865512749462072765">"选择输入法"</string>
     <string name="fast_scroll_alphabet" msgid="5433275485499039199">" ABCDEFGHIJKLMNOPQRSTUVWXYZ"</string>
     <string name="fast_scroll_numeric_alphabet" msgid="4030170524595123610">" 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"</string>
@@ -952,4 +954,21 @@
         <item quantity="one">还剩 %d 秒</item>
         <item quantity="other">还剩 %d 秒</item>
     </plurals>
+
+    <string name="keyguard_finger_please_swipe">将手指滑过传感器以解锁</string>
+    <string name="keyguard_finger_ui_timeout">UI 超时!</string>
+    <string name="keyguard_finger_failed_to_unlock">无法解锁!</string>
+    <string name="keyguard_finger_screen_off">屏幕关闭</string>
+    <string name="keyguard_finger_screen_on">屏幕打开</string>
+    <string name="keyguard_finger_match">手指吻合，解锁屏幕...</string>
+    <string name="keyguard_finger_not_match">手指不吻合...</string>
+    <string name="keyguard_finger_swipe_too_far_right">在中心滑动。</string>
+    <string name="keyguard_finger_swipe_too_far_left">在中心滑动。</string>
+    <string name="keyguard_finger_swipe_too_fast">滑得太快。</string>
+    <string name="keyguard_finger_swipe_too_short">滑得太短。</string>
+    <string name="keyguard_finger_swipe_too_slow">滑得太慢。</string>
+    <string name="keyguard_finger_swipe_too_skewed">滑得太偏。</string>
+    <string name="lockscreen_too_many_failed_fingers_dialog_message">您的指纹识别已失败 %1$d 次。\n\n请在 %2$d 秒内重试。</string>
+    <string name="lockscreen_failed_fingers_almost_glogin">您的指纹识别已失败 %1$d 次。如果识别再失败 %2$d 次，系统将要求您使用 Google 登录来解锁您的电话。\n\n请在 %3$d 秒内重试。</string>
+    <string name="lockscreen_forgot_finger_button_text">忘记手指?</string>
 </resources>
