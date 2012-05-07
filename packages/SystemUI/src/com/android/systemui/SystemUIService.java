@@ -19,6 +19,8 @@ package com.android.systemui;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
+import android.widget.FrameLayout;
+
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -89,6 +91,7 @@ public class SystemUIService extends Service {
                 throw new RuntimeException(ex);
             }
             mServices[i].mContext = this;
+            mServices[i].mStatusBarContainer = new FrameLayout(this);
             Slog.d(TAG, "running: " + mServices[i]);
             mServices[i].start();
         }
