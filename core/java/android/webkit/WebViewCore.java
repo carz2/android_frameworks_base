@@ -72,8 +72,6 @@ public final class WebViewCore {
      * WebViewCore always executes in the same thread as the native webkit.
      */
 
-    private static int mResumeTimerDuration = 2000;
-
     // The WebView that corresponds to this WebViewCore.
     private WebView mWebView;
     // Proxy for handling callbacks from native code
@@ -205,13 +203,6 @@ public final class WebViewCore {
         Message init = sWebCoreHandler.obtainMessage(
                 WebCoreThread.INITIALIZE, this);
         sWebCoreHandler.sendMessage(init);
-    }
-
-    private void sendPriorityMessageToWebView()
-    {
-        if (mWebView != null)
-            mWebView.mPrivateHandler.sendMessageAtFrontOfQueue(
-                mWebView.mPrivateHandler.obtainMessage(WebView.RESUME_RENDER_PRIORITY));
     }
 
     /* Initialize private data within the WebCore thread.
@@ -568,7 +559,6 @@ public final class WebViewCore {
             int anchorY, boolean ignoreHeight);
 
     private native int nativeGetContentMinPrefWidth();
-    private native static int nativeGetTextureGeneratorThreadID();
 
     // Start: functions that deal with text editing
     private native void nativeReplaceTextfieldText(
@@ -681,8 +671,6 @@ public final class WebViewCore {
         private static final int INITIALIZE = 0;
         private static final int REDUCE_PRIORITY = 1;
         private static final int RESUME_PRIORITY = 2;
-        private WebViewCore core = null;
-        private int tid = 0;
 
         public void run() {
             Looper.prepare();
@@ -693,48 +681,20 @@ public final class WebViewCore {
                     public void handleMessage(Message msg) {
                         switch (msg.what) {
                             case INITIALIZE:
-                                core = (WebViewCore) msg.obj;
+                                WebViewCore core = (WebViewCore) msg.obj;
                                 core.initialize();
                                 break;
 
                             case REDUCE_PRIORITY:
-                                sWebCoreHandler.removeMessages(WebCoreThread.RESUME_PRIORITY);
-                                tid = nativeGetTextureGeneratorThreadID();
-                                if (tid > 0) {
-                                    try {
-                                        Process.setThreadPriority(tid,Process.THREAD_PRIORITY_FOREGROUND);
-                                    } catch (IllegalArgumentException ex){
-                                        Log.e(LOGTAG, "Thread does not exist");
-                                    }
-                                }
-                                    // 10 is an adjustable number.
+                                // 3 is an adjustable number.
                                 Process.setThreadPriority(
-                                        Process.THREAD_PRIORITY_DEFAULT + 10 *
+                                        Process.THREAD_PRIORITY_DEFAULT + 3 *
                                         Process.THREAD_PRIORITY_LESS_FAVORABLE);
-
-                                sWebCoreHandler.sendMessageDelayed(Message.obtain(null,
-                                    WebCoreThread.RESUME_PRIORITY), mResumeTimerDuration);
-
                                 break;
 
                             case RESUME_PRIORITY:
-
-                                tid = nativeGetTextureGeneratorThreadID();
-                                if (tid > 0) {
-                                    try {
-                                        Process.setThreadPriority(tid,Process.THREAD_PRIORITY_DEFAULT);
-                                    } catch (IllegalArgumentException ex) {
-                                        Log.e(LOGTAG, "Thread does not exist");
-                                    }
-                                }
                                 Process.setThreadPriority(
                                         Process.THREAD_PRIORITY_DEFAULT);
-
-                                if (core != null)
-                                {
-                                    core.sendPriorityMessageToWebView();
-                                }
-
                                 break;
 
                             case EventHub.ADD_PACKAGE_NAME:
@@ -2126,20 +2086,12 @@ public final class WebViewCore {
                 .obtainMessage(WebCoreThread.REDUCE_PRIORITY));
     }
 
-    static void resumePriority(int delay) {
+    static void resumePriority() {
         // remove the pending REDUCE_PRIORITY and RESUME_PRIORITY messages
         sWebCoreHandler.removeMessages(WebCoreThread.REDUCE_PRIORITY);
         sWebCoreHandler.removeMessages(WebCoreThread.RESUME_PRIORITY);
-        if (delay > 0)
-        {
-            sWebCoreHandler.sendMessageDelayed(sWebCoreHandler
-                .obtainMessage(WebCoreThread.RESUME_PRIORITY), delay);
-        }
-        else
-        {
-            sWebCoreHandler.sendMessageAtFrontOfQueue(sWebCoreHandler
+        sWebCoreHandler.sendMessageAtFrontOfQueue(sWebCoreHandler
                 .obtainMessage(WebCoreThread.RESUME_PRIORITY));
-        }
     }
 
     static void sendStaticMessage(int messageType, Object argument) {
