@@ -138,6 +138,7 @@ public class NotificationManagerService extends INotificationManager.Stub
 
     // for enabling and disabling notification pulse behavior
     private boolean mScreenOn = true;
+    private boolean mWasScreenOn = false;
     private boolean mInCall = false;
     private boolean mNotificationPulseEnabled;
 
@@ -566,6 +567,8 @@ public class NotificationManagerService extends INotificationManager.Stub
                 mScreenOn = true;
             } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
                 mScreenOn = false;
+                mWasScreenOn = true;
+                updateLightsLocked();
             } else if (action.equals(TelephonyManager.ACTION_PHONE_STATE_CHANGED)) {
                 mInCall = (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(
                         TelephonyManager.EXTRA_STATE_OFFHOOK));
@@ -1159,8 +1162,6 @@ public class NotificationManagerService extends INotificationManager.Stub
                     (notification.defaults & Notification.DEFAULT_VIBRATE) != 0
                     || convertSoundToVibration;
 
-                if ((useDefaultVibrate || notification.vibrate != null)
-                        && !(audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT)) {
                 if (!(inQuietHours && mQuietHoursStill)
                         && (useDefaultVibrate || notification.vibrate != null)
                         && audioManager.shouldVibrate(AudioManager.VIBRATE_TYPE_NOTIFICATION)) {
