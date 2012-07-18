@@ -46,6 +46,7 @@ import android.graphics.drawable.NinePatchDrawable;
 import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
 import android.os.IPowerManager;
+import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
@@ -1664,8 +1665,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                         if (yVel < 50.0f) {
                             if (mLinger > 20) {
                                 float x = (float) event.getRawX();
-                                int newBrightness = (int) Math.round(((x / mScreenWidth) * android.os.Power.BRIGHTNESS_ON));
-                                newBrightness = Math.min(newBrightness, android.os.Power.BRIGHTNESS_ON);
+                                int newBrightness = (int) Math.round(((x / mScreenWidth) * android.os.PowerManager.BRIGHTNESS_ON));
+                                newBrightness = Math.min(newBrightness, android.os.PowerManager.BRIGHTNESS_ON);
                                 newBrightness = Math.max(newBrightness, mMinBrightness);
                                 try {
                                     IPowerManager power = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
