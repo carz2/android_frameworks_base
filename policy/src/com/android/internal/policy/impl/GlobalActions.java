@@ -232,26 +232,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mItems = new ArrayList<Action>();
 
-        // first: reboot
-        mItems.add(
-            new SinglePressAction(
-                        com.android.internal.R.drawable.ic_lock_reboot,
-                        R.string.global_action_reboot) {
-
-                    public void onPress() {
-                        mWindowManagerFuncs.reboot();
-                    }
-
-                    public boolean showDuringKeyguard() {
-                        return true;
-                    }
-
-                    public boolean showBeforeProvisioning() {
-                        return true;
-                    }
-                });
-
-        // second: power off
+        // first: power off
         mItems.add(
             new SinglePressAction(
                     com.android.internal.R.drawable.ic_lock_power_off,
@@ -275,6 +256,25 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     return true;
                 }
             });
+
+        // second: reboot
+        mItems.add(
+            new SinglePressAction(
+                        com.android.internal.R.drawable.ic_lock_reboot,
+                        R.string.global_action_reboot) {
+
+                    public void onPress() {
+                        mWindowManagerFuncs.reboot();
+                    }
+
+                    public boolean showDuringKeyguard() {
+                        return true;
+                    }
+
+                    public boolean showBeforeProvisioning() {
+                        return true;
+                    }
+                });
 
         // next: airplane mode
         mItems.add(mAirplaneModeOn);
