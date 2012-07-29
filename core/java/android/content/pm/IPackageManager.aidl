@@ -1,6 +1,7 @@
 /*
 **
 ** Copyright 2007, The Android Open Source Project
+** This code has been modified.  Portions copyright (C) 2010, T-Mobile USA, Inc.
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -38,6 +39,7 @@ import android.content.pm.PermissionGroupInfo;
 import android.content.pm.PermissionInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.content.pm.ThemeInfo;
 import android.content.pm.UserInfo;
 import android.content.pm.VerifierDeviceIdentity;
 import android.net.Uri;
@@ -126,6 +128,8 @@ interface IPackageManager {
      */
     ParceledListSlice getInstalledPackages(int flags, in String lastRead);
 
+    List<PackageInfo> getInstalledThemePackages();
+
     /**
      * This implements getInstalledApplications via a "last returned row"
      * mechanism that is not exposed in the API. This is to get around the IPC
@@ -136,7 +140,7 @@ interface IPackageManager {
 
     /**
      * Retrieve all applications that are marked as persistent.
-     * 
+     *
      * @return A List&lt;applicationInfo> containing one entry for each persistent
      *         application.
      */
