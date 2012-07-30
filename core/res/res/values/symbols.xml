@@ -1829,5 +1829,9 @@
   <java-symbol type="string" name="reboot_system" />
   <java-symbol type="string" name="reboot_progress" />
 
+  <!-- Lockscreen -->
+
+  <!-- Lock screen always show battery -->
+  <java-symbol type="string" name="lockscreen_discharging" />
 
 </resources>
