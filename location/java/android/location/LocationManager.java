@@ -283,6 +283,7 @@ public class LocationManager {
         return provider;
     }
 
+    /** @hide */
     public void setGPSSource(String device) {
         try {
             mService.setGPSSource(device);
