@@ -39,7 +39,7 @@ import com.android.systemui.R;
 
 import java.util.Date;
 
-public final class DateView extends TextView implements OnClickListener, OnTouchListener {
+public final class DateView extends TextView implements OnClickListener, OnLongClickListener {
     private static final String TAG = "DateView";
 
     private boolean mAttachedToWindow;
