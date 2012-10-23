@@ -202,7 +202,7 @@ public class CircleBattery extends ImageView {
         mPaintSystem.setColor(res.getColor(R.color.holo_blue_dark));
         // could not find the darker definition anywhere in resources
         // do not want to use static 0x404040 color value. would break theming.
-        mPaintGray.setColor(res.getColor(R.color.transparent));
+        mPaintGray.setColor(res.getColor(R.color.darker_gray));
         mPaintRed.setColor(res.getColor(R.color.holo_red_light));
         mPaintAnim.setColor(res.getColor(R.color.holo_blue_dark));
 
@@ -320,7 +320,7 @@ public class CircleBattery extends ImageView {
         float strokeWidth = mCircleSize / 6.5f;
         mPaintRed.setStrokeWidth(strokeWidth);
         mPaintSystem.setStrokeWidth(strokeWidth);
-        mPaintGray.setStrokeWidth(strokeWidth);
+        mPaintGray.setStrokeWidth(strokeWidth / 3.5f);
         mPaintAnim.setStrokeWidth(strokeWidth);
 
         // calculate rectangle for drawArc calls
