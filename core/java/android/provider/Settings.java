@@ -2023,6 +2023,15 @@ public final class Settings {
         public static final String ACCELEROMETER_ROTATION = "accelerometer_rotation";
 
         /**
+         * Control whether the accelerometer will be used to change lockscreen
+         * orientation.  If 0, it will not be used unless explicitly requested
+         * by the application; if 1, it will be used by default unless explicitly
+         * disabled by the application.
+         * @hide
+         */
+        public static final String LOCKSCREEN_ROTATION = "lockscreen_rotation";
+
+        /**
          * Control the type of rotation which can be performed using the accelerometer
          * if ACCELEROMETER_ROTATION is enabled.
          * Value is a bitwise combination of
@@ -2440,6 +2449,9 @@ public final class Settings {
             AUTO_TIME_ZONE,             // moved to global
             TIME_12_24,
             DATE_FORMAT,
+            ACCELEROMETER_ROTATION,
+            LOCKSCREEN_ROTATION,
+            USER_ROTATION,
             DTMF_TONE_WHEN_DIALING,
             DTMF_TONE_TYPE_WHEN_DIALING,
             HEARING_AID,
