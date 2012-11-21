@@ -46,6 +46,7 @@ public class BatteryController extends BroadcastReceiver {
 
     public interface BatteryStateChangeCallback {
         public void onBatteryLevelChanged(int level, boolean pluggedIn);
+    }
 
     private static final int BATTERY_STYLE_NORMAL         = 0;
     private static final int BATTERY_STYLE_PERCENT        = 1;
@@ -136,7 +137,7 @@ public class BatteryController extends BroadcastReceiver {
             }
 
             for (BatteryStateChangeCallback cb : mChangeCallbacks) {
-                cb.onBatteryLevelChanged(level, plugged);
+                cb.onBatteryLevelChanged(level, mBatteryPlugged);
             }
             updateBattery();
         }
