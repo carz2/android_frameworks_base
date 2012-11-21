@@ -157,7 +157,7 @@ public final class ShutdownThread extends Thread {
                             }
                         })
                         .create();
-                        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                        sConfirmDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
                             public boolean onKey (DialogInterface dialog, int keyCode, KeyEvent event) {
                                 if (keyCode == KeyEvent.KEYCODE_BACK) {
                                     mReboot = false;
