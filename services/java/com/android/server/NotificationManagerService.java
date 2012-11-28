@@ -669,6 +669,7 @@ public class NotificationManagerService extends INotificationManager.Stub
             mQuietHoursDim = Settings.System.getInt(resolver,
                     Settings.System.QUIET_HOURS_DIM, 0) != 0;
         }
+    }
 
     static long[] getLongArray(Resources r, int resid, int maxlen, long[] def) {
         int[] ar = r.getIntArray(resid);
@@ -1203,14 +1204,9 @@ public class NotificationManagerService extends INotificationManager.Stub
                 final boolean useDefaultVibrate =
                         (notification.defaults & Notification.DEFAULT_VIBRATE) != 0;
 
-<<<<<<< HEAD
                 if (!(inQuietHours && mQuietHoursStill)
-                        && (useDefaultVibrate || notification.vibrate != null)
+                        && (useDefaultVibrate || convertSoundToVibration || hasCustomVibrate)
                         && audioManager.shouldVibrate(AudioManager.VIBRATE_TYPE_NOTIFICATION)) {
-=======
-                if ((useDefaultVibrate || convertSoundToVibration || hasCustomVibrate)
-                        && !(audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT)) {
->>>>>>> aosp/jb-mr1-release
                     mVibrateNotification = r;
 
                     if (useDefaultVibrate || convertSoundToVibration) {
