@@ -87,9 +87,6 @@ class QuickSettings {
     private static final String TAG = "QuickSettings";
     public static final boolean SHOW_IME_TILE = false;
 
-    public String strGPSoff = "GPS Off";
-    public String strGPSon = "GPS On";
-
     private Context mContext;
     private PanelBar mBar;
     private QuickSettingsModel mModel;
@@ -436,6 +433,7 @@ class QuickSettings {
     }
 
     private void addSystemTiles(ViewGroup parent, LayoutInflater inflater) {
+        final Resources r = mContext.getResources();
         // Wi-fi
         QuickSettingsTileView wifiTile = (QuickSettingsTileView)
                 inflater.inflate(R.layout.quick_settings_tile, parent, false);
@@ -619,7 +617,8 @@ class QuickSettings {
                 Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(),
                        LocationManager.GPS_PROVIDER, gpsEnabled ? false : true);
                 TextView tv = (TextView) v.findViewById(R.id.location_textview);
-                tv.setText(gpsEnabled ? strGPSoff : strGPSon);
+                tv.setText(gpsEnabled ? R.string.quick_settings_gps_on_label
+                        : R.string.quick_settings_gps_off_label);
                 }
             });
             locationTile.setOnLongClickListener(new View.OnLongClickListener() {
@@ -637,7 +636,8 @@ class QuickSettings {
                     TextView tv = (TextView) view.findViewById(R.id.location_textview);
                     String newString = state.label;
                     if ((newString == null) || (newString.equals(""))) {
-                        tv.setText(gpsEnabled ? strGPSon : strGPSoff);
+                        tv.setText(gpsEnabled ? R.string.quick_settings_gps_on_label
+                                : R.string.quick_settings_gps_off_label);
                     } else {
                         tv.setText(state.label);
                     }
