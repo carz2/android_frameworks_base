@@ -1206,7 +1206,7 @@ public class NotificationManagerService extends INotificationManager.Stub
 
                 if (!(inQuietHours && mQuietHoursStill)
                         && (useDefaultVibrate || convertSoundToVibration || hasCustomVibrate)
-                        && audioManager.shouldVibrate(AudioManager.VIBRATE_TYPE_NOTIFICATION)) {
+                        && !(audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT)) {
                     mVibrateNotification = r;
 
                     if (useDefaultVibrate || convertSoundToVibration) {
