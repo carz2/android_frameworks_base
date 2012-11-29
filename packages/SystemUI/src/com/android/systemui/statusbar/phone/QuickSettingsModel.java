@@ -257,6 +257,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     void updateResources() {
         refreshSettingsTile();
         refreshBatteryTile();
+        refreshLocationTile();
         refreshBluetoothTile();
         refreshBrightnessTile();
         refreshRotationLockTile();
@@ -508,8 +509,13 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     void addLocationTile(QuickSettingsTileView view, RefreshCallback cb) {
         mLocationTile = view;
         mLocationCallback = cb;
+        refreshLocationTile();
+    }
+
+    void refreshLocationTile() {
         mLocationCallback.refreshView(mLocationTile, mLocationState);
     }
+
     // LocationController callback
     @Override
     public void onLocationGpsStateChanged(boolean inUse, String description) {

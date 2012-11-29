@@ -441,11 +441,7 @@ class QuickSettings {
         wifiTile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (wifiManager.isWifiEnabled()) {
-                    wifiManager.setWifiEnabled(false);
-                } else {
-                    wifiManager.setWifiEnabled(true);
-                }
+                wifiManager.setWifiEnabled(!wifiManager.isWifiEnabled());
             }
         });
         wifiTile.setOnLongClickListener(new View.OnLongClickListener() {
@@ -617,8 +613,10 @@ class QuickSettings {
                 Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(),
                        LocationManager.GPS_PROVIDER, gpsEnabled ? false : true);
                 TextView tv = (TextView) v.findViewById(R.id.location_textview);
-                tv.setText(gpsEnabled ? R.string.quick_settings_gps_on_label
-                        : R.string.quick_settings_gps_off_label);
+                tv.setText(gpsEnabled ? R.string.quick_settings_gps_off_label
+                        : R.string.quick_settings_gps_on_label);
+                tv.setCompoundDrawablesWithIntrinsicBounds(0, gpsEnabled ?
+                        R.drawable.ic_qs_gps_off : R.drawable.ic_qs_gps_on, 0, 0);
                 }
             });
             locationTile.setOnLongClickListener(new View.OnLongClickListener() {
@@ -638,8 +636,11 @@ class QuickSettings {
                     if ((newString == null) || (newString.equals(""))) {
                         tv.setText(gpsEnabled ? R.string.quick_settings_gps_on_label
                                 : R.string.quick_settings_gps_off_label);
+                        tv.setCompoundDrawablesWithIntrinsicBounds(0, gpsEnabled ?
+                                R.drawable.ic_qs_gps_on : R.drawable.ic_qs_gps_off, 0, 0);
                     } else {
                         tv.setText(state.label);
+                        tv.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_qs_gps_locked, 0, 0);
                     }
                 }
             });
