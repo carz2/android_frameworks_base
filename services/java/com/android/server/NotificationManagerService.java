@@ -1159,8 +1159,8 @@ public class NotificationManagerService extends INotificationManager.Stub
                 Uri soundUri = null;
                 boolean hasValidSound = false;
 
-                if (!(inQuietHours && mQuietHoursMute) && (useDefaultSound {
-                     soundUri = Settings.System.DEFAULT_NOTIFICATION_URI;
+                if (!(inQuietHours && mQuietHoursMute) && useDefaultSound) {
+                    soundUri = Settings.System.DEFAULT_NOTIFICATION_URI;
 
                     // check to see if the default notification sound is silent
                     ContentResolver resolver = mContext.getContentResolver();
@@ -1260,6 +1260,11 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
 
         idOut[0] = id;
+    }
+
+    private boolean shouldConvertSoundToVibration() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NOTIFICATION_CONVERT_SOUND_TO_VIBRATION, 1) != 0;
     }
 
     private boolean inQuietHours() {
