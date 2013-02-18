@@ -337,6 +337,63 @@ class QuickSettings {
         parent.addView(userTile);
         mDynamicSpannedTiles.add(userTile);
 
+        // Time tile
+        QuickSettingsTileView timeTile = (QuickSettingsTileView)
+                inflater.inflate(R.layout.quick_settings_tile, parent, false);
+        timeTile.setContent(R.layout.quick_settings_tile_time, inflater);
+        timeTile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Quick. Clock. Quick. Clock. Quick. Clock.
+                startSettingsActivity(Intent.ACTION_QUICK_CLOCK);
+            }
+        });
+        mModel.addTimeTile(timeTile, new QuickSettingsModel.RefreshCallback() {
+            @Override
+            public void refreshView(QuickSettingsTileView view, State alarmState) {}
+        });
+        parent.addView(timeTile);
+        mDynamicSpannedTiles.add(timeTile);
+
+        if (mModel.deviceHasMobileData()) {
+            // Mobile Network state
+            QuickSettingsTileView rssiTile = (QuickSettingsTileView)
+                    inflater.inflate(R.layout.quick_settings_tile, parent, false);
+            rssiTile.setContent(R.layout.quick_settings_tile_rssi, inflater);
+            rssiTile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.setComponent(new ComponentName(
+                            "com.android.settings",
+                            "com.android.settings.Settings$DataUsageSummaryActivity"));
+                    startSettingsActivity(intent);
+                }
+            });
+            mModel.addRSSITile(rssiTile, new QuickSettingsModel.RefreshCallback() {
+                @Override
+                public void refreshView(QuickSettingsTileView view, State state) {
+                    RSSIState rssiState = (RSSIState) state;
+                    ImageView iv = (ImageView) view.findViewById(R.id.rssi_image);
+                    ImageView iov = (ImageView) view.findViewById(R.id.rssi_overlay_image);
+                    TextView tv = (TextView) view.findViewById(R.id.rssi_textview);
+                    iv.setImageResource(rssiState.signalIconId);
+
+                    if (rssiState.dataTypeIconId > 0) {
+                        iov.setImageResource(rssiState.dataTypeIconId);
+                    } else {
+                        iov.setImageDrawable(null);
+                    }
+                    tv.setText(state.label);
+                    view.setContentDescription(mContext.getResources().getString(
+                            R.string.accessibility_quick_settings_mobile,
+                            rssiState.signalContentDescription, rssiState.dataContentDescription,
+                            state.label));
+                }
+            });
+            parent.addView(rssiTile);
+        }
+
         // Brightness
         QuickSettingsTileView brightnessTile = (QuickSettingsTileView)
                 inflater.inflate(R.layout.quick_settings_tile, parent, false);
