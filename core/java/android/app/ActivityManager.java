@@ -17,6 +17,7 @@
 
 package android.app;
 
+import android.R;
 import com.android.internal.app.IUsageStats;
 import com.android.internal.os.PkgUsageStats;
 import com.android.internal.util.MemInfoReader;
@@ -371,9 +372,9 @@ public class ActivityManager {
         // Really brain dead right now -- just take this from the configured
         // vm heap size, and assume it is in megabytes and thus ends with "m".
         String vmHeapSize = SystemProperties.get("dalvik.vm.heapsize", "16m");
-        return Integer.parseInt(vmHeapSize.substring(0, vmHeapSize.length()-1));
+        return Integer.parseInt(vmHeapSize.substring(0, vmHeapSize.length() - 1));
     }
-    
+
     /**
      * Used by persistent processes to determine if they are running on a
      * higher-end device so should be okay using hardware drawing acceleration
@@ -898,7 +899,7 @@ public class ActivityManager {
      * @param taskId The identifier of the task to be moved, as found in
      * {@link RunningTaskInfo} or {@link RecentTaskInfo}.
      * @param flags Additional operational flags, 0 or more of
-     * {@link #MOVE_TASK_WITH_HOME}.
+     * {@link #MOVE_TASK_WITH_HOME}, {@link #MOVE_TASK_NO_USER_ACTION}.
      */
     public void moveTaskToFront(int taskId, int flags) {
         moveTaskToFront(taskId, flags, null);
@@ -913,7 +914,7 @@ public class ActivityManager {
      * @param taskId The identifier of the task to be moved, as found in
      * {@link RunningTaskInfo} or {@link RecentTaskInfo}.
      * @param flags Additional operational flags, 0 or more of
-     * {@link #MOVE_TASK_WITH_HOME}.
+     * {@link #MOVE_TASK_WITH_HOME}, {@link #MOVE_TASK_NO_USER_ACTION}.
      * @param options Additional options for the operation, either null or
      * as per {@link Context#startActivity(Intent, android.os.Bundle)
      * Context.startActivity(Intent, Bundle)}.
@@ -1927,7 +1928,30 @@ public class ActivityManager {
         return PackageManager.PERMISSION_DENIED;
     }
 
-    /** @hide */
+    /**
+     * @hide
+     * Helper for dealing with incoming user arguments to system service calls.
+     * Takes care of checking permissions and converting USER_CURRENT to the
+     * actual current user.
+     *
+     * @param callingPid The pid of the incoming call, as per Binder.getCallingPid().
+     * @param callingUid The uid of the incoming call, as per Binder.getCallingUid().
+     * @param userId The user id argument supplied by the caller -- this is the user
+     * they want to run as.
+     * @param allowAll If true, we will allow USER_ALL.  This means you must be prepared
+     * to get a USER_ALL returned and deal with it correctly.  If false,
+     * an exception will be thrown if USER_ALL is supplied.
+     * @param requireFull If true, the caller must hold
+     * {@link android.Manifest.permission#INTERACT_ACROSS_USERS_FULL} to be able to run as a
+     * different user than their current process; otherwise they must hold
+     * {@link android.Manifest.permission#INTERACT_ACROSS_USERS}.
+     * @param name Optional textual name of the incoming call; only for generating error messages.
+     * @param callerPackage Optional package name of caller; only for error messages.
+     *
+     * @return Returns the user ID that the call should run as.  Will always be a concrete
+     * user number, unless <var>allowAll</var> is true in which case it could also be
+     * USER_ALL.
+     */
     public static int handleIncomingUser(int callingPid, int callingUid, int userId,
             boolean allowAll, boolean requireFull, String name, String callerPackage) {
         if (UserHandle.getUserId(callingUid) == userId) {
